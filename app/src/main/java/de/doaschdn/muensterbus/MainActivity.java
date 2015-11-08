@@ -1,8 +1,12 @@
 package de.doaschdn.muensterbus;
 
+import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -10,15 +14,42 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import java.util.List;
+
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     //@Bind(R.id.swipe_refresh) SwipeRefreshLayout _swipeRefreshLayout;
     LinearLayout _departureList;
     SwipeRefreshLayout _swipeRefreshLayout;
     RadioButton _rdBtnInwards;
     RadioButton _rdBtnOutwards;
     EditText _etDestination;
+
+    private static final SWMApiEndpointInterface client = SWMClient.createService(SWMApiEndpointInterface.class);
+
+    class QueryUpdater extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            return client.getDestinationsForQuery(params[0], System.currentTimeMillis() / 1000L);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d(TAG, result);
+            List<Destination> destinations = SWMParser.parseSearchQueryResults(result);
+
+            clearDepartures();
+
+            for (Destination destination : destinations) {
+                addDeparture(new Departure(destination.getId() + ": " + destination.getBusStop() + ". " + (destination.isInwards() ? "einwärts" : "auswärts")));
+            }
+
+            _swipeRefreshLayout.setRefreshing(false);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,18 +62,23 @@ public class MainActivity extends AppCompatActivity {
         _rdBtnOutwards = (RadioButton)findViewById(R.id.rdBtnOut);
         _etDestination = (EditText)findViewById(R.id.destination);
 
-        setDestination(new Destination("Schützenstraße", true));
+        _etDestination.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                new QueryUpdater().execute(s.toString());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            private int _busLine = 0;
             @Override
             public void onRefresh() {
-                if (_busLine >= 5) {
-                    clearDepartures();
-                    _busLine = 0;
-                }
-                addDeparture(new Departure("Linie " + ++_busLine));
-                _swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
