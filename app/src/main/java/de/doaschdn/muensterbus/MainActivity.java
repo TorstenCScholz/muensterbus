@@ -5,17 +5,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
     //@Bind(R.id.swipe_refresh) SwipeRefreshLayout _swipeRefreshLayout;
     LinearLayout _departureList;
     SwipeRefreshLayout _swipeRefreshLayout;
+    RadioButton _rdBtnInwards;
+    RadioButton _rdBtnOutwards;
+    EditText _etDestination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
         _swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
         _departureList = (LinearLayout)findViewById(R.id.departure_list);
+        _rdBtnInwards = (RadioButton)findViewById(R.id.rdBtnIn);
+        _rdBtnOutwards = (RadioButton)findViewById(R.id.rdBtnOut);
+        _etDestination = (EditText)findViewById(R.id.destination);
+
+        setDestination(new Destination("Schützenstraße", true));
 
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             private int _busLine = 0;
@@ -70,5 +78,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void clearDepartures() {
         _departureList.removeAllViews();
+    }
+
+    private void setDestination(Destination destination) {
+        RadioButton radioButton = destination.isInwards() ? _rdBtnInwards : _rdBtnOutwards;
+        radioButton.setChecked(true);
+
+        _etDestination.setText(destination.getBusStop());
     }
 }

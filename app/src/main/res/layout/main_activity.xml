@@ -31,7 +31,7 @@
             </RadioGroup>
 
             <EditText
-                android:id="@+id/input_street"
+                android:id="@+id/destination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
