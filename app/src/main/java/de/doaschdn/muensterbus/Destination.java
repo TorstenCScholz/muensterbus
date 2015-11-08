@@ -4,10 +4,12 @@ package de.doaschdn.muensterbus;
  * Created by Torsten on 08.11.2015.
  */
 public class Destination {
+    private String _id;
     private String _busStop;
     private boolean _inwards;
 
-    public Destination(String busStop, boolean inwards) {
+    public Destination(String id, String busStop, boolean inwards) {
+        _id = id;
         _busStop = busStop;
         _inwards = inwards;
     }
@@ -26,5 +28,13 @@ public class Destination {
 
     public void setInwards(boolean inwards) {
         this._inwards = inwards;
+    }
+
+    public String getId() {
+        return _id;
+    }
+
+    public void setId(String id) {
+        this._id = id;
     }
 }
