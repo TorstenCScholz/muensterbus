@@ -44,7 +44,19 @@ public class MainActivity extends AppCompatActivity {
             clearDepartures();
 
             for (Destination destination : destinations) {
-                addDeparture(new Departure(destination.getId() + ": " + destination.getBusStop() + ". " + (destination.isInwards() ? "einwärts" : "auswärts")));
+                String orientation;
+                switch (destination.getOrientation()) {
+                    case INWARDS:
+                        orientation = "<-";
+                        break;
+                    case OUTWARDS:
+                        orientation = "->";
+                        break;
+                    default:
+                        orientation = "*";
+                        break;
+                }
+                addDeparture(new Departure(destination.getId() + ": " + destination.getBusStop() + ". " + orientation));
             }
 
             _swipeRefreshLayout.setRefreshing(false);
@@ -116,10 +128,10 @@ public class MainActivity extends AppCompatActivity {
         _departureList.removeAllViews();
     }
 
-    private void setDestination(Destination destination) {
+    /*private void setDestination(Destination destination) {
         RadioButton radioButton = destination.isInwards() ? _rdBtnInwards : _rdBtnOutwards;
         radioButton.setChecked(true);
 
         _etDestination.setText(destination.getBusStop());
-    }
+    }*/
 }
