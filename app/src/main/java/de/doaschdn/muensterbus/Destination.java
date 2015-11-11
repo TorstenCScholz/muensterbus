@@ -6,12 +6,12 @@ package de.doaschdn.muensterbus;
 public class Destination {
     private String _id;
     private String _busStop;
-    private boolean _inwards;
+    private Orientation _orientation;
 
-    public Destination(String id, String busStop, boolean inwards) {
+    public Destination(String id, String busStop, Orientation orientation) {
         _id = id;
         _busStop = busStop;
-        _inwards = inwards;
+        _orientation = orientation;
     }
 
     public String getBusStop() {
@@ -22,12 +22,12 @@ public class Destination {
         this._busStop = busStop;
     }
 
-    public boolean isInwards() {
-        return _inwards;
+    public Orientation getOrientation() {
+        return _orientation;
     }
 
-    public void setInwards(boolean inwards) {
-        this._inwards = inwards;
+    public void setInwards(Orientation orientation) {
+        this._orientation = orientation;
     }
 
     public String getId() {
