@@ -2,5 +2,6 @@
     <string name="app_name">MuensterBus</string>
     <string name="inwards">Einwärts</string>
     <string name="outwards">Auswärts</string>
+    <string name="search_hint">Haltestelle</string>
 
 </resources>

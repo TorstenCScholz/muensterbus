@@ -1,5 +1,7 @@
 package de.doaschdn.muensterbus;
 
+import android.app.SearchManager;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -27,13 +29,11 @@ public class MainActivity extends AppCompatActivity {
     RadioButton _rdBtnOutwards;
     EditText _etDestination;
 
-    private static final SWMApiEndpointInterface client = SWMClient.createService(SWMApiEndpointInterface.class);
-
     class QueryUpdater extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
-            return client.getDestinationsForQuery(params[0], System.currentTimeMillis() / 1000L);
+            return "";
         }
 
         @Override
@@ -41,25 +41,29 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, result);
             List<Destination> destinations = SWMParser.parseSearchQueryResults(result);
 
-            clearDepartures();
-
-            for (Destination destination : destinations) {
-                String orientation;
-                switch (destination.getOrientation()) {
-                    case INWARDS:
-                        orientation = "<-";
-                        break;
-                    case OUTWARDS:
-                        orientation = "->";
-                        break;
-                    default:
-                        orientation = "*";
-                        break;
-                }
-                addDeparture(new Departure(destination.getId() + ": " + destination.getBusStop() + ". " + orientation));
-            }
+            displayDestinations(destinations);
 
             _swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    private void displayDestinations(List<Destination> destinations) {
+        clearDepartures();
+
+        for (Destination destination : destinations) {
+            String orientation;
+            switch (destination.getOrientation()) {
+                case INWARDS:
+                    orientation = "<-";
+                    break;
+                case OUTWARDS:
+                    orientation = "->";
+                    break;
+                default:
+                    orientation = "*";
+                    break;
+            }
+            addDeparture(new Departure(destination.getId() + ": " + destination.getBusStop() + ". " + orientation));
         }
     }
 
@@ -72,10 +76,9 @@ public class MainActivity extends AppCompatActivity {
         _departureList = (LinearLayout)findViewById(R.id.departure_list);
         _rdBtnInwards = (RadioButton)findViewById(R.id.rdBtnIn);
         _rdBtnOutwards = (RadioButton)findViewById(R.id.rdBtnOut);
-        _etDestination = (EditText)findViewById(R.id.destination);
+        //_etDestination = (EditText)findViewById(R.id.destination);
 
-        _etDestination.addTextChangedListener(new TextWatcher() {
-
+        /*_etDestination.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 new QueryUpdater().execute(s.toString());
@@ -86,13 +89,35 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {}
-        });
+        });*/
 
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
             }
         });
+
+        handleIntent(getIntent());
+
+        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
+        onSearchRequested();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+
+            Log.d(TAG, "Handling search for: " + query);
+            //List<Destination> destinations = SWMParser.parseSearchQueryResults(query);
+
+            //displayDestinations(destinations);
+        }
     }
 
     @Override
