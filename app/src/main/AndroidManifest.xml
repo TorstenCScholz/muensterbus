@@ -19,5 +19,7 @@
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
+        <provider android:name=".SearchContentProvider"
+            android:authorities="de.doaschdn.muensterbus.SearchContentProvider" />
 
 </manifest>
