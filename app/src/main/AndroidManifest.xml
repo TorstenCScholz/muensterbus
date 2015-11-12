@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.doaschdn.muensterbus" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/bus"
@@ -20,10 +22,9 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-    </application>
 
-    <uses-permission android:name="android.permission.INTERNET" />
         <provider android:name=".SearchContentProvider"
             android:authorities="de.doaschdn.muensterbus.SearchContentProvider" />
+    </application>
 
 </manifest>
