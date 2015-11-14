@@ -39,20 +39,20 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             Log.d(TAG, result);
-            List<Destination> destinations = SWMParser.parseSearchQueryResults(result);
+            List<BusStop> busStops = SWMParser.parseSearchQueryResults(result);
 
-            displayDestinations(destinations);
+            displayDestinations(busStops);
 
             _swipeRefreshLayout.setRefreshing(false);
         }
     }
 
-    private void displayDestinations(List<Destination> destinations) {
+    private void displayDestinations(List<BusStop> busStops) {
         clearDepartures();
 
-        for (Destination destination : destinations) {
+        for (BusStop busStop : busStops) {
             String orientation;
-            switch (destination.getOrientation()) {
+            switch (busStop.getOrientation()) {
                 case INWARDS:
                     orientation = "<-";
                     break;
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                     orientation = "*";
                     break;
             }
-            addDeparture(new Departure(destination.getId() + ": " + destination.getBusStop() + ". " + orientation));
+            addDeparture(new Departure(busStop.getId() + ": " + busStop.getName() + ". " + orientation));
         }
     }
 
