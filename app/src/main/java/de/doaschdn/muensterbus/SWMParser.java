@@ -15,22 +15,22 @@ public class SWMParser {
 
     private static final String SEARCH_QUERY_RESULT_REGEX = "<a class=\"inactive\" name=\"efahyperlinks\" href=\"http://www.stadtwerke-muenster.de/fis/(\\d+?)\" target=\"_self\">(.*?)<span style=\"font-weight:bold;\">(.+?)</span>(.*?) <span class=\"richtung\">(?:\\((.*?)\\))?</span></a>";
 
-    public static List<Destination> parseSearchQueryResults(final String queryResults) {
-        List<Destination> allMatches = new LinkedList<>();
+    public static List<BusStop> parseSearchQueryResults(final String queryResults) {
+        List<BusStop> allMatches = new LinkedList<>();
         Matcher m = Pattern.compile(SEARCH_QUERY_RESULT_REGEX, Pattern.CASE_INSENSITIVE).matcher(queryResults);
 
         while (m.find()) {
-            Destination destination = parseSingleSearchQueryResult(m.group());
+            BusStop busStop = parseSingleSearchQueryResult(m.group());
 
-            if (destination != null) {
-                allMatches.add(destination);
+            if (busStop != null) {
+                allMatches.add(busStop);
             }
         }
 
         return allMatches;
     }
 
-    public static Destination parseSingleSearchQueryResult(final String queryResult) {
+    public static BusStop parseSingleSearchQueryResult(final String queryResult) {
         Matcher m = Pattern.compile(SEARCH_QUERY_RESULT_REGEX, Pattern.CASE_INSENSITIVE).matcher(queryResult);
 
         if (m.matches()) {
@@ -47,7 +47,7 @@ public class SWMParser {
 
             Log.d(TAG, "Id: " + id + ", Stop: " + busStop + ", Orientation: " + orientation);
 
-            return new Destination(id, busStop, orientation);
+            return new BusStop(id, busStop, orientation);
         }
 
         return null;
