@@ -6,8 +6,6 @@ import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,9 +14,13 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import de.doaschdn.muensterbus.de.doaschdn.muensterbus.util.StringUtil;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -112,12 +114,23 @@ public class MainActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
+            Object data = intent.getData();
 
             Log.d(TAG, "Handling search for: " + query);
-            //List<Destination> destinations = SWMParser.parseSearchQueryResults(query);
+            Log.d(TAG, "Data: " + (data != null ? data.toString() : "<null>"));
 
-            //displayDestinations(destinations);
+            if (data != null) {
+                setBusStop(new Gson().fromJson(data.toString(), BusStopGroup.class));
+            }
         }
+    }
+
+    private void setBusStop(BusStopGroup group) {
+        TextView tvBusStopName = (TextView)findViewById(R.id.busstop_name);
+        tvBusStopName.setText(group.getName());
+
+        _rdBtnInwards.setEnabled(group.containsOrientation(Orientation.INWARDS));
+        _rdBtnOutwards.setEnabled(group.containsOrientation(Orientation.OUTWARDS));
     }
 
     @Override
@@ -153,10 +166,4 @@ public class MainActivity extends AppCompatActivity {
         _departureList.removeAllViews();
     }
 
-    /*private void setDestination(Destination destination) {
-        RadioButton radioButton = destination.isInwards() ? _rdBtnInwards : _rdBtnOutwards;
-        radioButton.setChecked(true);
-
-        _etDestination.setText(destination.getBusStop());
-    }*/
 }

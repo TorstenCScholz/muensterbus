@@ -2,19 +2,21 @@ package de.doaschdn.muensterbus;
 
 import android.app.SearchManager;
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.database.CharArrayBuffer;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.database.DataSetObserver;
 import android.database.MatrixCursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.List;
+
+import de.doaschdn.muensterbus.de.doaschdn.muensterbus.util.StringUtil;
 
 /**
  * Created by Torsten on 12.11.2015.
@@ -35,12 +37,16 @@ public class SearchContentProvider extends ContentProvider {
         Log.d(TAG, "Searching for: " + searchTerm);
 
         String results = client.getDestinationsForQuery(searchTerm, System.currentTimeMillis() / 1000L);
-        MatrixCursor cursor = new MatrixCursor(new String[] { BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1 });
-        List<Destination> destinationList = SWMParser.parseSearchQueryResults(results);
-        destinationList = Destination.uniquifyByBusStop(destinationList);
+        MatrixCursor cursor = new MatrixCursor(new String[] { BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_INTENT_DATA });
 
-        for (Destination destination : destinationList) {
-            cursor.addRow(new Object[] { Integer.parseInt(destination.getId()), destination.getBusStop() });
+        List<BusStop> busStopList = SWMParser.parseSearchQueryResults(results);
+        //busStopList = BusStop.uniquifyByName(busStopList);
+
+        List<BusStopGroup> busStopGroupList = BusStopGroup.createFromBusStopList(busStopList);
+
+        int idCounter = 0;
+        for (BusStopGroup busStopGroup : busStopGroupList) {
+            cursor.addRow(new Object[] { idCounter++, busStopGroup.getName(), new Gson().toJson(busStopGroup) });
         }
 
         return cursor;

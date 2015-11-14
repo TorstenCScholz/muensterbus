@@ -30,11 +30,13 @@
                     android:id="@+id/rdBtnOut" />
             </RadioGroup>
 
-            <!--<EditText
-                android:id="@+id/destination"
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />-->
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text=""
+                android:id="@+id/busstop_name"
+                android:gravity="center" />
         </LinearLayout>
 
         <LinearLayout
