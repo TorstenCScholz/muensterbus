@@ -6,7 +6,7 @@ package de.doaschdn.muensterbus;
 public class Departure {
     private String _busLine;
 
-    public Departure (String busLine) {
+    public Departure(String busLine) {
         _busLine = busLine;
     }
 
