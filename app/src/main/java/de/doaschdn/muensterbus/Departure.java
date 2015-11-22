@@ -5,9 +5,11 @@ package de.doaschdn.muensterbus;
  */
 public class Departure {
     private String _busLine;
+    private String _departureTime;
 
-    public Departure(String busLine) {
+    public Departure(String busLine, String departureIn) {
         _busLine = busLine;
+        _departureTime = departureIn;
     }
 
     public String getBusLine() {
@@ -16,5 +18,13 @@ public class Departure {
 
     public void setBusLine(String busLine) {
         this._busLine = busLine;
+    }
+
+    public String getDepartureTime() {
+        return _departureTime;
+    }
+
+    public void setDepartureTime(String departureTime) {
+        _departureTime = departureTime;
     }
 }
