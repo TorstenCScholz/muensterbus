@@ -21,17 +21,16 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.doaschdn.muensterbus.de.doaschdn.muensterbus.util.StringUtil;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    //@Bind(R.id.swipe_refresh) SwipeRefreshLayout _swipeRefreshLayout;
-    LinearLayout _departureList;
-    SwipeRefreshLayout _swipeRefreshLayout;
-    RadioButton _rdBtnInwards;
-    RadioButton _rdBtnOutwards;
-    EditText _etDestination;
+    @Bind(R.id.swipe_refresh) SwipeRefreshLayout _swipeRefreshLayout;
+    @Bind(R.id.departure_list) LinearLayout _departureList;
+    @Bind(R.id.rdBtnIn) RadioButton _rdBtnInwards;
+    @Bind(R.id.rdBtnOut)RadioButton _rdBtnOutwards;
 
     class QueryUpdater extends AsyncTask<String, Void, String> {
 
@@ -100,13 +99,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
         setContentView(R.layout.main_activity);
-        _swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
-        _departureList = (LinearLayout)findViewById(R.id.departure_list);
-        _rdBtnInwards = (RadioButton)findViewById(R.id.rdBtnIn);
-        _rdBtnOutwards = (RadioButton)findViewById(R.id.rdBtnOut);
-        //_etDestination = (EditText)findViewById(R.id.destination);
+
+        ButterKnife.bind(this);
 
         /*_etDestination.addTextChangedListener(new TextWatcher() {
             @Override
@@ -130,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
         handleIntent(getIntent());
 
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
-        onSearchRequested();
     }
 
     @Override
