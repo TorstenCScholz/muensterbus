@@ -14,6 +14,7 @@ public class SWMParser {
     private static final String TAG = "SWMParser";
 
     private static final String SEARCH_QUERY_RESULT_REGEX = "<a class=\"inactive\" name=\"efahyperlinks\" href=\"http://www.stadtwerke-muenster.de/fis/(\\d+?)\" target=\"_self\">(.*?)<span style=\"font-weight:bold;\">(.+?)</span>(.*?) <span class=\"richtung\">(?:\\((.*?)\\))?</span></a>";
+    private static final String BUSSTOP_REQUEST_RESULT_REGEX = "<div class=\"\\w+\"><div class=\"line\">([^<]+?)</div><div class=\"direction\">([^<]+?)</div><div class=\"\\w+\">([^>]*?)</div><br class=\"clear\" /></div>";
 
     public static List<BusStop> parseSearchQueryResults(final String queryResults) {
         List<BusStop> allMatches = new LinkedList<>();
@@ -51,5 +52,26 @@ public class SWMParser {
         }
 
         return null;
+    }
+
+    public static List<Departure> parseBusStopRequests(final String queryResult) {
+        List<Departure> departures = new LinkedList<>();
+        Matcher m = Pattern.compile(BUSSTOP_REQUEST_RESULT_REGEX, Pattern.CASE_INSENSITIVE).matcher(queryResult);
+
+        while (m.find()) {
+            String busLine = m.group(1);
+            String direction = m.group(2);
+            String departureTime = m.group(3);
+
+            if (departureTime.isEmpty()) {
+                departureTime = "now";
+            }
+
+            Departure departure = new Departure(busLine, departureTime);
+            Log.d(TAG, "Found Departure: " + departure.toString());
+            departures.add(departure);
+        }
+
+        return departures;
     }
 }
