@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -27,10 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     @Bind(R.id.swipe_refresh) SwipeRefreshLayout _swipeRefreshLayout;
     @Bind(R.id.departure_list) LinearLayout _departureList;
-    @Bind(R.id.rdBtnIn) RadioButton _rdBtnInwards;
-    @Bind(R.id.rdBtnOut)RadioButton _rdBtnOutwards;
+    @Bind(R.id.rdgSelectedDestination) RadioGroup _rdgSelectedDestination;
 
     private BusStopGroup _selectedBusStopGroup;
+    private BusStop selectedBusStop;
 
     class QueryUpdater extends AsyncTask<String, Void, String> {
 
@@ -138,14 +140,22 @@ public class MainActivity extends AppCompatActivity {
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateDepartures();
+                int radioButtonID = _rdgSelectedDestination.getCheckedRadioButtonId();
+                RadioButton selectedRadioButton = (RadioButton)_rdgSelectedDestination.findViewById(radioButtonID);
+                BusStop busStop = (BusStop)selectedRadioButton.getTag();
+
+                updateDepartures(busStop);
+                _swipeRefreshLayout.setRefreshing(false);
             }
         });
 
-        _rdBtnInwards.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        /*_rdBtnInwards.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d(TAG, "Inwards: _rdBtnInwards: " + _rdBtnInwards.isChecked() + ", param: " + isChecked);
+                Log.d(TAG, "Inwards: _rdBtnOutwards: " + _rdBtnInwards.isChecked());
                 if (isChecked) {
+                    //_rdBtnOutwards.setChecked(false);
                     updateDepartures();
                 }
             }
@@ -154,11 +164,14 @@ public class MainActivity extends AppCompatActivity {
         _rdBtnOutwards.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d(TAG, "Outwards: _rdBtnOutwards: " + _rdBtnOutwards.isChecked() + ", param: " + isChecked);
+                Log.d(TAG, "Outwards: _rdBtnInwards: " + _rdBtnOutwards.isChecked());
                 if (isChecked) {
+                    //_rdBtnInwards.setChecked(false);
                     updateDepartures();
                 }
             }
-        });
+        });*/
 
         handleIntent(getIntent());
 
@@ -192,9 +205,24 @@ public class MainActivity extends AppCompatActivity {
         TextView tvBusStopName = (TextView)findViewById(R.id.busstop_name);
         tvBusStopName.setText(busStopGroup.getName());
 
-        // TODO: Group items must be dynamic
-        _rdBtnInwards.setEnabled(busStopGroup.containsOrientation(Orientation.INWARDS));
-        _rdBtnOutwards.setEnabled(busStopGroup.containsOrientation(Orientation.OUTWARDS));
+        _rdgSelectedDestination.removeAllViews();
+
+        for (final BusStop busStop : busStopGroup.getBusStops()) {
+            RadioButton rdBtnBusStop = new RadioButton(this);
+            rdBtnBusStop.setText(busStop.getOrientation() == Orientation.INWARDS ? "einwärts" : "auswärts");
+            rdBtnBusStop.setTag(busStop);
+            rdBtnBusStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                BusStop _busStop = busStop;
+
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        updateDepartures(_busStop);
+                    }
+                }
+            });
+            _rdgSelectedDestination.addView(rdBtnBusStop);
+        }
 
         _selectedBusStopGroup = busStopGroup;
 
@@ -202,36 +230,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void preselectDirection() {
-        if (_rdBtnInwards.isEnabled()) {
-            _rdBtnInwards.setChecked(true);
-        }
-        else if (_rdBtnOutwards.isEnabled()) {
-            _rdBtnOutwards.setChecked(true);
-        }
+        RadioButton selectedDirection = (RadioButton)_rdgSelectedDestination.getChildAt(0);
+        selectedDirection.setChecked(true);
     }
 
-    private void updateDepartures() {
-        if (_selectedBusStopGroup == null) {
-            return;
-        }
-
-        int index = -1;
-
-        if (_rdBtnInwards.isChecked()) {
-            index = 1;
-        }
-        else if (!_rdBtnInwards.isEnabled() && _rdBtnOutwards.isChecked()) {
-            index = 0;
-        }
-        else {
-            index = 1;
-        }
-
-        if (index != -1) {
-            Log.d(TAG, "Updating departures for: " + _selectedBusStopGroup.getBusStops().get(index).toString());
-            Log.d(TAG, "Selected index: " + index);
-            new BusStopRequest().execute(_selectedBusStopGroup.getBusStops().get(index));
-        }
+    private void updateDepartures(BusStop busStop) {
+        Log.d(TAG, "New departure: " + busStop.toString());
+        new BusStopRequest().execute(busStop);
     }
 
     @Override
