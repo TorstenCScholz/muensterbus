@@ -10,20 +10,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import de.doaschdn.muensterbus.de.doaschdn.muensterbus.util.StringUtil;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -57,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected List<BusStopGroup> doInBackground(String... params) {
             _busStopName = params[0];
-           return SearchContentProvider.getBusStopGroupsFor(_busStopName);
+            return SearchContentProvider.getBusStopGroupsFor(_busStopName);
         }
 
         @Override
@@ -72,6 +69,25 @@ public class MainActivity extends AppCompatActivity {
             }
             else {
                 setBusStop(busStopGroups.get(0));
+            }
+        }
+    }
+
+    class BusStopRequest extends AsyncTask<String, Void, List<Departure>> {
+
+        private final SWMApiEndpointInterface client = SWMClient.createService(SWMApiEndpointInterface.class);
+
+        @Override
+        protected List<Departure> doInBackground(String... params) {
+            return SWMParser.parseBusStopRequests(client.getDeparturesForBusStop(params[0], System.currentTimeMillis() / 1000));
+        }
+
+        @Override
+        protected void onPostExecute(List<Departure> departureList) {
+            clearDepartures();
+
+            for (Departure departure : departureList) {
+                addDeparture(departure);
             }
         }
     }
@@ -92,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     orientation = "*";
                     break;
             }
-            addDeparture(new Departure(busStop.getId() + ": " + busStop.getName() + ". " + orientation));
+            //addDeparture(new Departure(busStop.getId() + ": " + busStop.getName() + ". " + orientation));
         }
     }
 
@@ -154,8 +170,11 @@ public class MainActivity extends AppCompatActivity {
         TextView tvBusStopName = (TextView)findViewById(R.id.busstop_name);
         tvBusStopName.setText(group.getName());
 
+        // TODO: Group items must be dynamic
         _rdBtnInwards.setEnabled(group.containsOrientation(Orientation.INWARDS));
         _rdBtnOutwards.setEnabled(group.containsOrientation(Orientation.OUTWARDS));
+
+        new BusStopRequest().execute(group.getBusStops().get(0).getId());
     }
 
     @Override
@@ -180,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void addDeparture(Departure departure) {
         TextView tv = new TextView(this);
-        tv.setText(departure.getBusLine());
+        tv.setText(departure.getBusLine() + ": " + departure.getDepartureTime());
 
         _departureList.addView(tv);
     }
