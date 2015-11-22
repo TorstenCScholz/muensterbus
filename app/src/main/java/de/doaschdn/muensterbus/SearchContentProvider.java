@@ -11,12 +11,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.List;
-
-import de.doaschdn.muensterbus.de.doaschdn.muensterbus.util.StringUtil;
 
 /**
  * Created by Torsten on 12.11.2015.
