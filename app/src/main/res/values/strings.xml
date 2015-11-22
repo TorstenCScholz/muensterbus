@@ -6,5 +6,6 @@
     <string name="action_search">Haltestelle</string>
     <string name="busstop_not_found">Haltestelle nicht gefunden.</string>
     <string name="busstop_not_found_desc">Die Haltestelle \'\'{0}\'\' konnte nicht gefunden werden. Bitte überprüfen Sie Ihre Eingabe.</string>
+    <string name="busline">Linie</string>
 
 </resources>
