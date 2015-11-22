@@ -34,15 +34,10 @@ public class SearchContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         String searchTerm = uri.getLastPathSegment().toLowerCase();
+        MatrixCursor cursor = new MatrixCursor(new String[] { BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_INTENT_DATA });
         Log.d(TAG, "Searching for: " + searchTerm);
 
-        String results = client.getDestinationsForQuery(searchTerm, System.currentTimeMillis() / 1000L);
-        MatrixCursor cursor = new MatrixCursor(new String[] { BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_INTENT_DATA });
-
-        List<BusStop> busStopList = SWMParser.parseSearchQueryResults(results);
-        //busStopList = BusStop.uniquifyByName(busStopList);
-
-        List<BusStopGroup> busStopGroupList = BusStopGroup.createFromBusStopList(busStopList);
+        List<BusStopGroup> busStopGroupList = getBusStopGroupsFor(searchTerm);
 
         int idCounter = 0;
         for (BusStopGroup busStopGroup : busStopGroupList) {
@@ -70,5 +65,11 @@ public class SearchContentProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
+    }
+
+    public static List<BusStopGroup> getBusStopGroupsFor(String searchTerm) {
+        String results = client.getDestinationsForQuery(searchTerm, System.currentTimeMillis() / 1000L);
+        List<BusStop> busStopList = SWMParser.parseSearchQueryResults(results);
+        return BusStopGroup.createFromBusStopList(busStopList);
     }
 }

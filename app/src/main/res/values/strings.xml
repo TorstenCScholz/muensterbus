@@ -1,7 +1,10 @@
 <resources>
-    <string name="app_name">MuensterBus</string>
+    <string name="app_name">Münster Bus</string>
     <string name="inwards">Einwärts</string>
     <string name="outwards">Auswärts</string>
     <string name="search_hint">Haltestelle</string>
+    <string name="action_search">Haltestelle</string>
+    <string name="busstop_not_found">Haltestelle nicht gefunden.</string>
+    <string name="busstop_not_found_desc">Die Haltestelle \'\'{0}\'\' konnte nicht gefunden werden. Bitte überprüfen Sie Ihre Eingabe.</string>
 
 </resources>

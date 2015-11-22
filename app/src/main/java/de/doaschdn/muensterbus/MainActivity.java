@@ -1,5 +1,6 @@
 package de.doaschdn.muensterbus;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -46,6 +48,32 @@ public class MainActivity extends AppCompatActivity {
             displayDestinations(busStops);
 
             _swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    class QuerySearchForSpecificTerm extends AsyncTask<String, Void, List<BusStopGroup>> {
+
+        private String _busStopName;
+
+        @Override
+        protected List<BusStopGroup> doInBackground(String... params) {
+            _busStopName = params[0];
+           return SearchContentProvider.getBusStopGroupsFor(_busStopName);
+        }
+
+        @Override
+        protected void onPostExecute(List<BusStopGroup> busStopGroups) {
+            if (busStopGroups.size() != 1) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(R.string.busstop_not_found)
+                        .setMessage(MessageFormat.format(getText(R.string.busstop_not_found_desc).toString(), _busStopName))
+                        .setCancelable(true)
+                        .setPositiveButton("Ok", null)
+                        .show();
+            }
+            else {
+                setBusStop(busStopGroups.get(0));
+            }
         }
     }
 
@@ -119,7 +147,10 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Handling search for: " + query);
             Log.d(TAG, "Data: " + (data != null ? data.toString() : "<null>"));
 
-            if (data != null) {
+            if (query != null) {
+                new QuerySearchForSpecificTerm().execute(query);
+            }
+            else if (data != null) {
                 setBusStop(new Gson().fromJson(data.toString(), BusStopGroup.class));
             }
         }
@@ -135,20 +166,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
+            onSearchRequested();
+
             return true;
         }
 
