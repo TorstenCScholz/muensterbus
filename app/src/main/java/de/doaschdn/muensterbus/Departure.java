@@ -27,4 +27,9 @@ public class Departure {
     public void setDepartureTime(String departureTime) {
         _departureTime = departureTime;
     }
+
+    @Override
+    public String toString() {
+        return "@Departure: {Line: " + _busLine + ", Departure in: " + _departureTime + "}";
+    }
 }
