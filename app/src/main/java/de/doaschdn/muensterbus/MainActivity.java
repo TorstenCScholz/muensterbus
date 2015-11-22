@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -28,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.departure_list) LinearLayout _departureList;
     @Bind(R.id.rdBtnIn) RadioButton _rdBtnInwards;
     @Bind(R.id.rdBtnOut)RadioButton _rdBtnOutwards;
+
+    private BusStopGroup _selectedBusStopGroup;
 
     class QueryUpdater extends AsyncTask<String, Void, String> {
 
@@ -73,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class BusStopRequest extends AsyncTask<String, Void, List<Departure>> {
+    class BusStopRequest extends AsyncTask<BusStop, Void, List<Departure>> {
 
         private final SWMApiEndpointInterface client = SWMClient.createService(SWMApiEndpointInterface.class);
 
         @Override
-        protected List<Departure> doInBackground(String... params) {
-            return SWMParser.parseBusStopRequests(client.getDeparturesForBusStop(params[0], System.currentTimeMillis() / 1000));
+        protected List<Departure> doInBackground(BusStop... params) {
+            return SWMParser.parseBusStopRequests(client.getDeparturesForBusStop(params[0].getId(), System.currentTimeMillis() / 1000));
         }
 
         @Override
@@ -135,6 +138,25 @@ public class MainActivity extends AppCompatActivity {
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                updateDepartures();
+            }
+        });
+
+        _rdBtnInwards.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    updateDepartures();
+                }
+            }
+        });
+
+        _rdBtnOutwards.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    updateDepartures();
+                }
             }
         });
 
@@ -166,15 +188,50 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setBusStop(BusStopGroup group) {
+    private void setBusStop(BusStopGroup busStopGroup) {
         TextView tvBusStopName = (TextView)findViewById(R.id.busstop_name);
-        tvBusStopName.setText(group.getName());
+        tvBusStopName.setText(busStopGroup.getName());
 
         // TODO: Group items must be dynamic
-        _rdBtnInwards.setEnabled(group.containsOrientation(Orientation.INWARDS));
-        _rdBtnOutwards.setEnabled(group.containsOrientation(Orientation.OUTWARDS));
+        _rdBtnInwards.setEnabled(busStopGroup.containsOrientation(Orientation.INWARDS));
+        _rdBtnOutwards.setEnabled(busStopGroup.containsOrientation(Orientation.OUTWARDS));
 
-        new BusStopRequest().execute(group.getBusStops().get(0).getId());
+        _selectedBusStopGroup = busStopGroup;
+
+        preselectDirection();
+    }
+
+    private void preselectDirection() {
+        if (_rdBtnInwards.isEnabled()) {
+            _rdBtnInwards.setChecked(true);
+        }
+        else if (_rdBtnOutwards.isEnabled()) {
+            _rdBtnOutwards.setChecked(true);
+        }
+    }
+
+    private void updateDepartures() {
+        if (_selectedBusStopGroup == null) {
+            return;
+        }
+
+        int index = -1;
+
+        if (_rdBtnInwards.isChecked()) {
+            index = 1;
+        }
+        else if (!_rdBtnInwards.isEnabled() && _rdBtnOutwards.isChecked()) {
+            index = 0;
+        }
+        else {
+            index = 1;
+        }
+
+        if (index != -1) {
+            Log.d(TAG, "Updating departures for: " + _selectedBusStopGroup.getBusStops().get(index).toString());
+            Log.d(TAG, "Selected index: " + index);
+            new BusStopRequest().execute(_selectedBusStopGroup.getBusStops().get(index));
+        }
     }
 
     @Override
@@ -199,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void addDeparture(Departure departure) {
         TextView tv = new TextView(this);
-        tv.setText(departure.getBusLine() + ": " + departure.getDepartureTime());
+        tv.setText(getString(R.string.busline) + " " + departure.getBusLine() + ": " + departure.getDepartureTime());
 
         _departureList.addView(tv);
     }

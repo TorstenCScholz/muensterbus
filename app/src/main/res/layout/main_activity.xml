@@ -21,13 +21,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/inwards"
-                    android:id="@+id/rdBtnIn" />
+                    android:id="@+id/rdBtnIn"
+                    android:enabled="false" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/outwards"
-                    android:id="@+id/rdBtnOut" />
+                    android:id="@+id/rdBtnOut"
+                    android:enabled="false" />
             </RadioGroup>
 
             <TextView
