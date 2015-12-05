@@ -13,12 +13,12 @@ import java.util.TreeSet;
 public class BusStop implements Serializable {
     private String _id;
     private String _name;
-    private Orientation _orientation;
+    private Direction _direction;
 
-    public BusStop(String id, String busStop, Orientation orientation) {
+    public BusStop(String id, String busStop, Direction direction) {
         _id = id;
         _name = busStop;
-        _orientation = orientation;
+        _direction = direction;
     }
 
     public String getName() {
@@ -29,12 +29,12 @@ public class BusStop implements Serializable {
         this._name = busStop;
     }
 
-    public Orientation getOrientation() {
-        return _orientation;
+    public Direction getDirection() {
+        return _direction;
     }
 
-    public void setInwards(Orientation orientation) {
-        this._orientation = orientation;
+    public void setInwards(Direction direction) {
+        this._direction = direction;
     }
 
     public String getId() {
@@ -61,6 +61,6 @@ public class BusStop implements Serializable {
 
     @Override
     public String toString() {
-        return "@BusStop[Id: " + _id + ", Name: " + _name + ", Orientation: " + _orientation.toString() + "]";
+        return "@BusStop[Id: " + _id + ", Name: " + _name + ", Direction: " + _direction.toString() + "]";
     }
 }

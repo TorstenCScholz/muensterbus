@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (BusStop busStop : busStops) {
             String orientation;
-            switch (busStop.getOrientation()) {
+            switch (busStop.getDirection()) {
                 case INWARDS:
                     orientation = "<-";
                     break;
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (final BusStop busStop : busStopGroup.getBusStops()) {
             RadioButton rdBtnBusStop = new RadioButton(this);
-            rdBtnBusStop.setText(busStop.getOrientation() == Orientation.INWARDS ? "einwärts" : "auswärts");
+            rdBtnBusStop.setText(busStop.getDirection() == Direction.INWARDS ? "einwärts" : "auswärts");
             rdBtnBusStop.setTag(busStop);
             rdBtnBusStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 BusStop _busStop = busStop;

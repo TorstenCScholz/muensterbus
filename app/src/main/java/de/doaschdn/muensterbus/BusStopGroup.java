@@ -2,7 +2,6 @@ package de.doaschdn.muensterbus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,10 +67,10 @@ public class BusStopGroup implements Serializable {
         return commonPrefix;
     }
 
-    public boolean containsOrientation(Orientation orientation) {
-        if (orientation != Orientation.NONE) {
+    public boolean hasDirection(Direction direction) {
+        if (direction != Direction.NONE) {
             for (BusStop busStop : _busStops) {
-                if (busStop.getOrientation() == orientation) {
+                if (busStop.getDirection() == direction) {
                     return true;
                 }
             }
