@@ -14,7 +14,7 @@ public class SWMParser {
     private static final String TAG = "SWMParser";
 
     private static final String SEARCH_QUERY_RESULT_REGEX = "<a class=\"inactive\" name=\"efahyperlinks\" href=\"http://www.stadtwerke-muenster.de/fis/(\\d+?)\" target=\"_self\">(.*?)<span style=\"font-weight:bold;\">(.+?)</span>(.*?) <span class=\"richtung\">(?:\\((.*?)\\))?</span></a>";
-    private static final String BUSSTOP_REQUEST_RESULT_REGEX = "<div class=\"\\w+\"><div class=\"line\">([^<]+?)</div><div class=\"direction\">([^<]+?)</div><div class=\"\\w+\">([^>]*?)</div><br class=\"clear\" /></div>";
+    private static final String BUSSTOP_REQUEST_RESULT_REGEX = "<div class=\"\\w+\"><div class=\"line\">([^<]+?)</div><div class=\"direction\">([^<]+?)</div><div class=\"\\w+\">((?:[^<]*?)|(?:<div class=\"borden\"></div>))</div><br class=\"clear\" /></div>";
 
     public static List<BusStop> parseSearchQueryResults(final String queryResults) {
         List<BusStop> allMatches = new LinkedList<>();
@@ -58,16 +58,23 @@ public class SWMParser {
         List<Departure> departures = new LinkedList<>();
         Matcher m = Pattern.compile(BUSSTOP_REQUEST_RESULT_REGEX, Pattern.CASE_INSENSITIVE).matcher(queryResult);
 
+        Log.d(TAG, "Analysing: " + queryResult);
+
         while (m.find()) {
             String busLine = m.group(1);
             String direction = m.group(2);
             String departureTime = m.group(3);
+            Departure.TimeType time = Departure.TimeType.DEPARTURE_IN;
 
-            if (departureTime.isEmpty()) {
-                departureTime = "now";
+            if (departureTime.startsWith("<div")) {
+                time = Departure.TimeType.NOW;
+                departureTime = "0";
+            }
+            else if (departureTime.contains(":")) {
+                time = Departure.TimeType.DEPARTURE_AT;
             }
 
-            Departure departure = new Departure(busLine, departureTime);
+            Departure departure = new Departure(busLine, time, departureTime);
             Log.d(TAG, "Found Departure: " + departure.toString());
             departures.add(departure);
         }

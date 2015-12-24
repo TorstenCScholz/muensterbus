@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -84,11 +83,24 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected List<Departure> doInBackground(BusStop... params) {
-            return SWMParser.parseBusStopRequests(client.getDeparturesForBusStop(params[0].getId(), System.currentTimeMillis() / 1000));
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    _swipeRefreshLayout.setRefreshing(true);
+                }
+            });
+            List<Departure> departures = SWMParser.parseBusStopRequests(client.getDeparturesForBusStop(params[0].getId(), System.currentTimeMillis() / 1000));
+
+            return departures;
         }
 
         @Override
         protected void onPostExecute(List<Departure> departureList) {
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    _swipeRefreshLayout.setRefreshing(false);
+                }
+            });
+
             clearDepartures();
 
             for (Departure departure : departureList) {
@@ -98,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayDestinations(List<BusStop> busStops) {
-        clearDepartures();
+        //clearDepartures();
 
         for (BusStop busStop : busStops) {
             String orientation;
@@ -145,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                 BusStop busStop = (BusStop)selectedRadioButton.getTag();
 
                 updateDepartures(busStop);
-                _swipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -260,10 +271,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addDeparture(Departure departure) {
-        TextView tv = new TextView(this);
-        tv.setText(getString(R.string.busline) + " " + departure.getBusLine() + ": " + departure.getDepartureTime());
+        Log.d(TAG, "Adding to list view: " + departure.toString());
 
-        _departureList.addView(tv);
+        DepartureRow dr = new DepartureRow(this);
+        dr.setBusLine(getString(R.string.busline) + " " + departure.getBusLine());
+        if (departure.getTimeType().equals(Departure.TimeType.DEPARTURE_IN)) {
+            dr.setDepartureTimeLive(departure.getDepartureTime());
+            //dr.setDepartureTimeCalculated("-");
+        }
+        else if (departure.getTimeType().equals(Departure.TimeType.NOW)) {
+            dr.setDepartureTimeLive(getString(R.string.now));
+        }
+        else {
+            dr.setDepartureTimeCalculated(departure.getDepartureTime());
+        }
+
+        _departureList.addView(dr);
     }
 
     private void clearDepartures() {
