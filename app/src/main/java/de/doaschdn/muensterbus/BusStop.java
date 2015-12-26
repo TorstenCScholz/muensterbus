@@ -33,7 +33,7 @@ public class BusStop implements Serializable {
         return _direction;
     }
 
-    public void setInwards(Direction direction) {
+    public void setDirection(Direction direction) {
         this._direction = direction;
     }
 
@@ -62,5 +62,10 @@ public class BusStop implements Serializable {
     @Override
     public String toString() {
         return "@BusStop[Id: " + _id + ", Name: " + _name + ", Direction: " + _direction.toString() + "]";
+    }
+
+    public boolean belongsToSameGroupAs(BusStop busStop) {
+        return busStop != null && getName().equals(busStop.getName());
+
     }
 }

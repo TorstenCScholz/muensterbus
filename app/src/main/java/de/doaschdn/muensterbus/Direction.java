@@ -7,4 +7,5 @@ public enum Direction {
     NONE,
     INWARDS,
     OUTWARDS,
+    STATIC
 }
