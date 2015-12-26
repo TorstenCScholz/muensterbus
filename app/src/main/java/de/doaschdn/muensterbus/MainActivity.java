@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -27,10 +30,14 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    @Bind(R.id.swipe_refresh) SwipeRefreshLayout _swipeRefreshLayout;
-    @Bind(R.id.departure_list) LinearLayout _departureList;
-    @Bind(R.id.rdgSelectedDestination) RadioGroup _rdgSelectedDestination;
-    @Bind(R.id.station_spinner) Spinner _spStations;
+    @Bind(R.id.swipe_refresh)
+    SwipeRefreshLayout _swipeRefreshLayout;
+    @Bind(R.id.departure_list)
+    LinearLayout _departureList;
+    @Bind(R.id.rdgSelectedDestination)
+    RadioGroup _rdgSelectedDestination;
+    @Bind(R.id.station_spinner)
+    Spinner _spStations;
 
     private BusStopGroup _selectedBusStopGroup;
     private BusStop selectedBusStop;
@@ -72,8 +79,7 @@ public class MainActivity extends AppCompatActivity {
                         .setCancelable(true)
                         .setPositiveButton("Ok", null)
                         .show();
-            }
-            else {
+            } else {
                 setBusStopGroup(busStopGroups.get(0));
             }
         }
@@ -155,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 int radioButtonID = _rdgSelectedDestination.getCheckedRadioButtonId();
-                RadioButton selectedRadioButton = (RadioButton)_rdgSelectedDestination.findViewById(radioButtonID);
-                BusStop busStop = (BusStop)selectedRadioButton.getTag();
+                RadioButton selectedRadioButton = (RadioButton) _rdgSelectedDestination.findViewById(radioButtonID);
+                BusStop busStop = (BusStop) selectedRadioButton.getTag();
 
                 updateDepartures(busStop);
             }
@@ -207,43 +213,66 @@ public class MainActivity extends AppCompatActivity {
 
             if (query != null) {
                 new QuerySearchForSpecificTerm().execute(query);
-            }
-            else if (data != null) {
+            } else if (data != null) {
                 setBusStopGroup(new Gson().fromJson(data.toString(), BusStopGroup.class));
             }
         }
     }
 
     private void setBusStopGroup(BusStopGroup busStopGroup) {
-        TextView tvBusStopName = (TextView)findViewById(R.id.busstop_name);
+        TextView tvBusStopName = (TextView) findViewById(R.id.busstop_name);
         tvBusStopName.setText(busStopGroup.getName());
 
         _rdgSelectedDestination.removeAllViews();
-
-        for (final BusStop busStop : busStopGroup.getBusStops()) {
-            RadioButton rdBtnBusStop = new RadioButton(this);
-            rdBtnBusStop.setText(busStop.getDirection() == Direction.INWARDS ? "einwärts" : "auswärts");
-            rdBtnBusStop.setTag(busStop);
-            rdBtnBusStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                BusStop _busStop = busStop;
-
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        updateDepartures(_busStop);
-                    }
-                }
-            });
-            _rdgSelectedDestination.addView(rdBtnBusStop);
-        }
-
         _selectedBusStopGroup = busStopGroup;
 
-        preselectDirection();
+        if (busStopGroup.containsStation()) {
+            _rdgSelectedDestination.setVisibility(View.GONE);
+            _spStations.setVisibility(View.VISIBLE);
+            ArrayAdapter<BusStopSpinnerWrapper> adapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    BusStopSpinnerWrapper.fromBusStopList(busStopGroup.getBusStops())
+            );
+            _spStations.setAdapter(adapter);
+            _spStations.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    BusStopSpinnerWrapper busStopWrapper = (BusStopSpinnerWrapper) parent.getAdapter().getItem(position);
+                    updateDepartures(busStopWrapper.getBusStop());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+        } else {
+            _spStations.setVisibility(View.GONE);
+            _rdgSelectedDestination.setVisibility(View.VISIBLE);
+
+            for (final BusStop busStop : busStopGroup.getBusStops()) {
+                RadioButton rdBtnBusStop = new RadioButton(this);
+                rdBtnBusStop.setText(busStop.getDirection() == Direction.INWARDS ? "einwärts" : "auswärts");
+                rdBtnBusStop.setTag(busStop);
+                rdBtnBusStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    BusStop _busStop = busStop;
+
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            updateDepartures(_busStop);
+                        }
+                    }
+                });
+                _rdgSelectedDestination.addView(rdBtnBusStop);
+            }
+
+            preselectDirection();
+        }
     }
 
     private void preselectDirection() {
-        RadioButton selectedDirection = (RadioButton)_rdgSelectedDestination.getChildAt(0);
+        RadioButton selectedDirection = (RadioButton) _rdgSelectedDestination.getChildAt(0);
         selectedDirection.setChecked(true);
     }
 
@@ -280,11 +309,9 @@ public class MainActivity extends AppCompatActivity {
         if (departure.getTimeType().equals(Departure.TimeType.DEPARTURE_IN)) {
             dr.setDepartureTimeLive(departure.getDepartureTime());
             //dr.setDepartureTimeCalculated("-");
-        }
-        else if (departure.getTimeType().equals(Departure.TimeType.NOW)) {
+        } else if (departure.getTimeType().equals(Departure.TimeType.NOW)) {
             dr.setDepartureTimeLive(getString(R.string.now));
-        }
-        else {
+        } else {
             dr.setDepartureTimeCalculated(departure.getDepartureTime());
         }
 

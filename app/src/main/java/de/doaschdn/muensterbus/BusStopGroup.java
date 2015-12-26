@@ -79,6 +79,16 @@ public class BusStopGroup implements Serializable {
         return false;
     }
 
+    public boolean containsStation() {
+        for (BusStop busStop : _busStops) {
+            if (busStop.isStation()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static List<BusStopGroup> createFromBusStopList(List<BusStop> busStopList) {
         BusStop[] busStopArray = busStopList.toArray(new BusStop[busStopList.size()]);
         Map<String, BusStopGroup> busStopGroupMap = new HashMap<>();

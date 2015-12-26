@@ -45,8 +45,6 @@ public class SWMParser {
 
             String busStop = busStopPart1 + busStopPart2 + busStopPart3;
 
-            Log.d(TAG, "BUSSTOP: " + busStop);
-
             if (m.group(5) != null) {
                 switch (m.group(5)) {
                     case "einwärts":
