@@ -42,7 +42,17 @@ public class SWMParser {
             Direction direction = Direction.NONE;
 
             if (m.group(5) != null) {
-                direction = m.group(5).startsWith("ein") ? Direction.INWARDS : Direction.OUTWARDS;
+                switch (m.group(5)) {
+                    case "einwärts":
+                        direction = Direction.INWARDS;
+                        break;
+                    case "auswärts":
+                        direction = Direction.OUTWARDS;
+                        break;
+                    default:
+                        direction = Direction.END;
+                        break;
+                }
             }
             String busStop = busStopPart1 + busStopPart2 + busStopPart3;
 
