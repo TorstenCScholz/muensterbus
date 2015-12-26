@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.doaschdn.muensterbus.de.doaschdn.muensterbus.util.StringUtil;
+
 /**
  * Created by Torsten on 08.11.2015.
  */
@@ -41,6 +43,10 @@ public class SWMParser {
             String busStopPart3 = m.group(4);
             Direction direction = Direction.NONE;
 
+            String busStop = busStopPart1 + busStopPart2 + busStopPart3;
+
+            Log.d(TAG, "BUSSTOP: " + busStop);
+
             if (m.group(5) != null) {
                 switch (m.group(5)) {
                     case "einwärts":
@@ -54,7 +60,9 @@ public class SWMParser {
                         break;
                 }
             }
-            String busStop = busStopPart1 + busStopPart2 + busStopPart3;
+            if (BusStop.containsStationName(busStop)) {
+                return BusStop.fromStationName(id, busStop, direction);
+            }
 
             Log.d(TAG, "Id: " + id + ", Stop: " + busStop + ", Direction: " + direction);
 

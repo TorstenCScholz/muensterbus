@@ -90,7 +90,7 @@ public class BusStopGroup implements Serializable {
                 if (busStop1 == busStop2) {
                     continue;
                 }
-                if (busStop1.getName().equals(busStop2.getName())) {
+                if (busStop1.belongsToSameGroupAs((busStop2))) {
                     group.addBusStop(busStop2);
                 }
             }
