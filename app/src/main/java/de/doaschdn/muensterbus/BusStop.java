@@ -6,11 +6,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Torsten on 08.11.2015.
  */
 public class BusStop implements Serializable {
+    private static final String STATIC_BUS_STOP_NAME_REGEX = "(?:(.+)\\s)?(\\w\\d?)(?:\\s(.+))?";
+
     private String _id;
     private String _name;
     private Direction _direction;
@@ -84,6 +88,25 @@ public class BusStop implements Serializable {
 
     public boolean belongsToSameGroupAs(BusStop busStop) {
         return busStop != null && getName().equals(busStop.getName());
+    }
 
+    public static boolean containsStationName(String fullName) {
+        Matcher m = Pattern.compile(STATIC_BUS_STOP_NAME_REGEX, Pattern.CASE_INSENSITIVE).matcher(fullName);
+
+        return m.matches();
+    }
+
+    public static BusStop fromStationName(String id, String fullName, Direction direction) {
+        Matcher m = Pattern.compile(STATIC_BUS_STOP_NAME_REGEX, Pattern.CASE_INSENSITIVE).matcher(fullName);
+
+        if (m.matches()) {
+            String prefix = m.group(1) != null ? m.group(1) : "";
+            String station = m.group(2);
+            String postfix = m.group(3) != null ? m.group(3) : "";
+
+            return new BusStop(id, prefix + postfix, direction, station);
+        }
+
+        return null;
     }
 }
