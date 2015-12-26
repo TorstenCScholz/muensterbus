@@ -14,6 +14,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.swipe_refresh) SwipeRefreshLayout _swipeRefreshLayout;
     @Bind(R.id.departure_list) LinearLayout _departureList;
     @Bind(R.id.rdgSelectedDestination) RadioGroup _rdgSelectedDestination;
+    @Bind(R.id.station_spinner) Spinner _spStations;
 
     private BusStopGroup _selectedBusStopGroup;
     private BusStop selectedBusStop;
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                         .show();
             }
             else {
-                setBusStop(busStopGroups.get(0));
+                setBusStopGroup(busStopGroups.get(0));
             }
         }
     }
@@ -207,12 +209,12 @@ public class MainActivity extends AppCompatActivity {
                 new QuerySearchForSpecificTerm().execute(query);
             }
             else if (data != null) {
-                setBusStop(new Gson().fromJson(data.toString(), BusStopGroup.class));
+                setBusStopGroup(new Gson().fromJson(data.toString(), BusStopGroup.class));
             }
         }
     }
 
-    private void setBusStop(BusStopGroup busStopGroup) {
+    private void setBusStopGroup(BusStopGroup busStopGroup) {
         TextView tvBusStopName = (TextView)findViewById(R.id.busstop_name);
         tvBusStopName.setText(busStopGroup.getName());
 

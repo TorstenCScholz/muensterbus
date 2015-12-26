@@ -18,6 +18,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <Spinner
+                    android:id="@+id/station_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
                 <RadioGroup
                     android:id="@+id/rdgSelectedDestination"
                     android:layout_width="wrap_content"
