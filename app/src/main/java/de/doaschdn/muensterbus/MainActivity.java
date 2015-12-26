@@ -157,12 +157,24 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });*/
 
+        _swipeRefreshLayout.setColorSchemeColors(R.color.purple, R.color.blue, R.color.pink);
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                int radioButtonID = _rdgSelectedDestination.getCheckedRadioButtonId();
-                RadioButton selectedRadioButton = (RadioButton) _rdgSelectedDestination.findViewById(radioButtonID);
-                BusStop busStop = (BusStop) selectedRadioButton.getTag();
+                if (_selectedBusStopGroup == null) { // Nothing to load
+                    _swipeRefreshLayout.setRefreshing(false);
+                    return;
+                }
+
+                BusStop busStop = null;
+
+                if (_selectedBusStopGroup.containsStation()) {
+                    busStop = ((BusStopSpinnerWrapper)_spStations.getSelectedItem()).getBusStop();
+                } else {
+                    int radioButtonID = _rdgSelectedDestination.getCheckedRadioButtonId();
+                    RadioButton selectedRadioButton = (RadioButton) _rdgSelectedDestination.findViewById(radioButtonID);
+                    busStop = (BusStop) selectedRadioButton.getTag();
+                }
 
                 updateDepartures(busStop);
             }
