@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });*/
 
-        _swipeRefreshLayout.setColorSchemeColors(R.color.purple, R.color.blue, R.color.pink);
+        _swipeRefreshLayout.setColorSchemeResources(R.color.purple, R.color.blue, R.color.pink);
         _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
