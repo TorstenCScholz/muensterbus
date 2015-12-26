@@ -14,11 +14,17 @@ public class BusStop implements Serializable {
     private String _id;
     private String _name;
     private Direction _direction;
+    private String _station;
 
     public BusStop(String id, String busStop, Direction direction) {
+        this(id, busStop, direction, null);
+    }
+
+    public BusStop(String id, String busStop, Direction direction, String station) {
         _id = id;
         _name = busStop;
         _direction = direction;
+        _station = station;
     }
 
     public String getName() {
@@ -45,6 +51,18 @@ public class BusStop implements Serializable {
         this._id = id;
     }
 
+    public String getStation() {
+        return _station;
+    }
+
+    public void setStation(String station) {
+        _station = station;
+    }
+
+    public boolean isStation() {
+        return getStation() != null;
+    }
+
     public static List<BusStop> uniquifyByName(List<BusStop> busStopList) {
         Set<BusStop> uniqueBusStops = new TreeSet<>(new Comparator<BusStop>() {
             @Override
@@ -61,7 +79,7 @@ public class BusStop implements Serializable {
 
     @Override
     public String toString() {
-        return "@BusStop[Id: " + _id + ", Name: " + _name + ", Direction: " + _direction.toString() + "]";
+        return "@BusStop[Id: " + _id + ", Name: " + _name + ", Direction: " + _direction.toString() + ", Station: " + _station + "]";
     }
 
     public boolean belongsToSameGroupAs(BusStop busStop) {
