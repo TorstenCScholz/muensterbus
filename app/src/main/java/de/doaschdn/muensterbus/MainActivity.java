@@ -91,11 +91,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected List<Departure> doInBackground(BusStop... params) {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    _swipeRefreshLayout.setRefreshing(true);
-                }
-            });
             List<Departure> departures = SWMParser.parseBusStopRequests(client.getDeparturesForBusStop(params[0].getId(), System.currentTimeMillis() / 1000));
 
             return departures;
