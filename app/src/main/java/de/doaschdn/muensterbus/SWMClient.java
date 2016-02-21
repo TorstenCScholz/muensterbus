@@ -10,10 +10,13 @@ import retrofit.client.OkClient;
  */
 public class SWMClient {
     // Takes two arguments: First is the term to be searched, second is the current unix time
-    private static final String BASE_URL = "http://www.stadtwerke-muenster.de/fis";
+    public static final String BASE_URL = "http://www.stadtwerke-muenster.de/fis";
+    public static final String BASE_URL_DEV = "http://192.168.2.103:4567";
+
+    public static final String USED_BASE_URL = BASE_URL_DEV;
 
     private static RestAdapter.Builder builder = new RestAdapter.Builder()
-            .setEndpoint(BASE_URL)
+            .setEndpoint(USED_BASE_URL)
             .setConverter(StringConverterFactory.create())
             .setClient(new OkClient(new OkHttpClient()));
 
