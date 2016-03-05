@@ -7,6 +7,8 @@
     <string name="busstop_not_found">Haltestelle nicht gefunden.</string>
     <string name="busstop_not_found_desc">Die Haltestelle \'\'{0}\'\' konnte nicht gefunden werden. Bitte überprüfen Sie Ihre Eingabe.</string>
     <string name="busline">Linie</string>
-    <string name="now">Jetzt!</string>
+    <string name="now">Jeden Moment!</string>
+    <string name="departure_time_live_label">Ankunft in: </string>
+    <string name="departure_time_calculated_label">Ankunft ca. um: </string>
 
 </resources>

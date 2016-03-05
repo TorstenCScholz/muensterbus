@@ -13,7 +13,7 @@ public class SWMClient {
     public static final String BASE_URL = "http://www.stadtwerke-muenster.de/fis";
     public static final String BASE_URL_DEV = "http://192.168.2.103:4567";
 
-    public static final String USED_BASE_URL = BASE_URL_DEV;
+    public static final String USED_BASE_URL = BASE_URL;
 
     private static RestAdapter.Builder builder = new RestAdapter.Builder()
             .setEndpoint(USED_BASE_URL)

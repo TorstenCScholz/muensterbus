@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,17 +25,19 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.text.MessageFormat;
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.doaschdn.muensterbus.thirdparty.DividerItemDecoration;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     @Bind(R.id.swipe_refresh)
     SwipeRefreshLayout _swipeRefreshLayout;
     @Bind(R.id.departure_list)
-    LinearLayout _departureList;
+    RecyclerView _departureList;
     @Bind(R.id.rdgSelectedDestination)
     RadioGroup _rdgSelectedDestination;
     @Bind(R.id.station_spinner)
@@ -104,11 +108,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            clearDepartures();
-
-            for (Departure departure : departureList) {
-                addDeparture(departure);
-            }
+            DepartureAdapter adapter = new DepartureAdapter(getApplicationContext(), departureList);
+            _departureList.setAdapter(adapter);
         }
     }
 
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 BusStop busStop = null;
 
                 if (_selectedBusStopGroup.containsStation()) {
-                    busStop = ((BusStopSpinnerWrapper)_spStations.getSelectedItem()).getBusStop();
+                    busStop = ((BusStopSpinnerWrapper) _spStations.getSelectedItem()).getBusStop();
                 } else {
                     int radioButtonID = _rdgSelectedDestination.getCheckedRadioButtonId();
                     RadioButton selectedRadioButton = (RadioButton) _rdgSelectedDestination.findViewById(radioButtonID);
@@ -174,6 +175,20 @@ public class MainActivity extends AppCompatActivity {
                 updateDepartures(busStop);
             }
         });
+
+        _departureList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        _departureList.setLayoutManager(llm);
+        DividerItemDecoration divider = new DividerItemDecoration(this, null);
+        _departureList.addItemDecoration(divider);
+
+//        List<Departure> departureList = new LinkedList<>();
+//        departureList.add(new Departure("Test 1", Departure.TimeType.DEPARTURE_IN, "2 Min."));
+//        departureList.add(new Departure("Test 2", Departure.TimeType.DEPARTURE_AT, "19:55 Uhr"));
+//        DepartureAdapter adapter = new DepartureAdapter(departureList);
+//        _departureList.setAdapter(adapter);
+
 
         /*_rdBtnInwards.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -307,26 +322,4 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    private void addDeparture(Departure departure) {
-        Log.d(TAG, "Adding to list view: " + departure.toString());
-
-        DepartureRow dr = new DepartureRow(this);
-        dr.setBusLine(getString(R.string.busline) + " " + departure.getBusLine());
-        if (departure.getTimeType().equals(Departure.TimeType.DEPARTURE_IN)) {
-            dr.setDepartureTimeLive(departure.getDepartureTime());
-            //dr.setDepartureTimeCalculated("-");
-        } else if (departure.getTimeType().equals(Departure.TimeType.NOW)) {
-            dr.setDepartureTimeLive(getString(R.string.now));
-        } else {
-            dr.setDepartureTimeCalculated(departure.getDepartureTime());
-        }
-
-        _departureList.addView(dr);
-    }
-
-    private void clearDepartures() {
-        _departureList.removeAllViews();
-    }
-
 }
