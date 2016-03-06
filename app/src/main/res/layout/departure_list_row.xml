@@ -24,39 +24,46 @@
             android:textSize="18sp"
             android:background="@drawable/card_title_rounded_corners"/>
 
-        <TextView
-            android:id="@+id/departure_time_live_label"
-            android:layout_width="150dp"
+        <LinearLayout
+            android:id="@+id/label_container"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/bus_line"
-            android:gravity="center_vertical"
-            android:text="@string/departure_time_live_label"
-            android:textSize="12sp" />
+            android:orientation="vertical"
+            android:layout_marginRight="3dp"
+            android:layout_below="@id/bus_line">
+
+            <TextView
+                android:id="@+id/departure_time_live_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/departure_time_live_label"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/departure_time_calculated_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/departure_time_calculated_label"
+                android:textSize="12sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/departure_time_live"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/departure_time_live_label"
+            android:layout_toRightOf="@id/label_container"
             android:layout_below="@id/bus_line"
             android:gravity="center_vertical"
             android:textStyle="bold"
             android:textSize="12sp" />
 
         <TextView
-            android:id="@+id/departure_time_calculated_label"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/departure_time_live"
-            android:gravity="center_vertical"
-            android:text="@string/departure_time_calculated_label"
-            android:textSize="12sp" />
-
-        <TextView
             android:id="@+id/departure_time_calculated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/departure_time_calculated_label"
+            android:layout_toRightOf="@id/label_container"
             android:layout_below="@id/departure_time_live"
             android:gravity="center_vertical"
             android:textStyle="bold"
