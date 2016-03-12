@@ -4,9 +4,10 @@ import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -25,7 +25,6 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.text.MessageFormat;
-import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -37,32 +36,13 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.swipe_refresh)
     SwipeRefreshLayout _swipeRefreshLayout;
     @Bind(R.id.departure_list)
-    RecyclerView _departureList;
+    RecyclerView _departureView;
     @Bind(R.id.rdgSelectedDestination)
     RadioGroup _rdgSelectedDestination;
     @Bind(R.id.station_spinner)
     Spinner _spStations;
 
     private BusStopGroup _selectedBusStopGroup;
-    private BusStop selectedBusStop;
-
-    class QueryUpdater extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            return "";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            Log.d(TAG, result);
-            List<BusStop> busStops = SWMParser.parseSearchQueryResults(result);
-
-            displayDestinations(busStops);
-
-            _swipeRefreshLayout.setRefreshing(false);
-        }
-    }
 
     class QuerySearchForSpecificTerm extends AsyncTask<String, Void, List<BusStopGroup>> {
 
@@ -109,27 +89,7 @@ public class MainActivity extends AppCompatActivity {
             });
 
             DepartureAdapter adapter = new DepartureAdapter(getApplicationContext(), departureList);
-            _departureList.setAdapter(adapter);
-        }
-    }
-
-    private void displayDestinations(List<BusStop> busStops) {
-        //clearDepartures();
-
-        for (BusStop busStop : busStops) {
-            String orientation;
-            switch (busStop.getDirection()) {
-                case INWARDS:
-                    orientation = "<-";
-                    break;
-                case OUTWARDS:
-                    orientation = "->";
-                    break;
-                default:
-                    orientation = "*";
-                    break;
-            }
-            //addDeparture(new Departure(busStop.getId() + ": " + busStop.getName() + ". " + orientation));
+            _departureView.setAdapter(adapter);
         }
     }
 
@@ -140,21 +100,19 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        /*_etDestination.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                new QueryUpdater().execute(s.toString());
-            }
+        _swipeRefreshLayout.setColorSchemeResources(R.color.primary_dark, R.color.primary, R.color.primary_light);
+        _swipeRefreshLayout.setOnRefreshListener(getOnRefreshListener());
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        initDepartureView();
 
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });*/
+        handleIntent(getIntent());
 
-        _swipeRefreshLayout.setColorSchemeResources(R.color.purple, R.color.blue, R.color.pink);
-        _swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
+    }
+
+    @NonNull
+    private SwipeRefreshLayout.OnRefreshListener getOnRefreshListener() {
+        return new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 if (_selectedBusStopGroup == null) { // Nothing to load
@@ -174,49 +132,16 @@ public class MainActivity extends AppCompatActivity {
 
                 updateDepartures(busStop);
             }
-        });
+        };
+    }
 
-        _departureList.setHasFixedSize(true);
+    private void initDepartureView() {
+        _departureView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
-        _departureList.setLayoutManager(llm);
+        _departureView.setLayoutManager(llm);
         DividerItemDecoration divider = new DividerItemDecoration(this, null);
-        _departureList.addItemDecoration(divider);
-
-//        List<Departure> departureList = new LinkedList<>();
-//        departureList.add(new Departure("Test 1", Departure.TimeType.DEPARTURE_IN, "2 Min."));
-//        departureList.add(new Departure("Test 2", Departure.TimeType.DEPARTURE_AT, "19:55 Uhr"));
-//        DepartureAdapter adapter = new DepartureAdapter(departureList);
-//        _departureList.setAdapter(adapter);
-
-
-        /*_rdBtnInwards.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(TAG, "Inwards: _rdBtnInwards: " + _rdBtnInwards.isChecked() + ", param: " + isChecked);
-                Log.d(TAG, "Inwards: _rdBtnOutwards: " + _rdBtnInwards.isChecked());
-                if (isChecked) {
-                    //_rdBtnOutwards.setChecked(false);
-                    updateDepartures();
-                }
-            }
-        });
-
-        _rdBtnOutwards.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(TAG, "Outwards: _rdBtnOutwards: " + _rdBtnOutwards.isChecked() + ", param: " + isChecked);
-                Log.d(TAG, "Outwards: _rdBtnInwards: " + _rdBtnOutwards.isChecked());
-                if (isChecked) {
-                    //_rdBtnInwards.setChecked(false);
-                    updateDepartures();
-                }
-            }
-        });*/
-
-        handleIntent(getIntent());
-
-        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
+        _departureView.addItemDecoration(divider);
     }
 
     @Override
@@ -226,18 +151,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            Object data = intent.getData();
+        if (!Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            return;
+        }
 
-            Log.d(TAG, "Handling search for: " + query);
-            Log.d(TAG, "Data: " + (data != null ? data.toString() : "<null>"));
+        String query = intent.getStringExtra(SearchManager.QUERY);
+        Object data = intent.getData();
 
-            if (query != null) {
-                new QuerySearchForSpecificTerm().execute(query);
-            } else if (data != null) {
-                setBusStopGroup(new Gson().fromJson(data.toString(), BusStopGroup.class));
-            }
+        Log.d(TAG, "Handling search for: " + query);
+        Log.d(TAG, "Data: " + (data != null ? data.toString() : "<null>"));
+
+        if (query != null) {
+            new QuerySearchForSpecificTerm().execute(query);
+        } else if (data != null) {
+            setBusStopGroup(new Gson().fromJson(data.toString(), BusStopGroup.class));
         }
     }
 
@@ -249,48 +176,66 @@ public class MainActivity extends AppCompatActivity {
         _selectedBusStopGroup = busStopGroup;
 
         if (busStopGroup.containsStation()) {
-            _rdgSelectedDestination.setVisibility(View.GONE);
-            _spStations.setVisibility(View.VISIBLE);
-            ArrayAdapter<BusStopSpinnerWrapper> adapter = new ArrayAdapter<>(
-                    this,
-                    android.R.layout.simple_spinner_dropdown_item,
-                    BusStopSpinnerWrapper.fromBusStopList(busStopGroup.getBusStops())
-            );
-            _spStations.setAdapter(adapter);
-            _spStations.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    BusStopSpinnerWrapper busStopWrapper = (BusStopSpinnerWrapper) parent.getAdapter().getItem(position);
-                    updateDepartures(busStopWrapper.getBusStop());
-                }
+            initBusStopStations(busStopGroup);
+        } else {
+            initBusStopGroup(busStopGroup);
+        }
+    }
+
+    private void initBusStopGroup(BusStopGroup busStopGroup) {
+        enableStationSelection(false);
+
+        for (final BusStop busStop : busStopGroup.getBusStops()) {
+            RadioButton rdBtnBusStop = new RadioButton(this);
+            rdBtnBusStop.setText(DirectionMap.translate(busStop.getDirection()));
+            rdBtnBusStop.setTag(busStop);
+            rdBtnBusStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                BusStop _busStop = busStop;
 
                 @Override
-                public void onNothingSelected(AdapterView<?> parent) {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        updateDepartures(_busStop);
+                    }
                 }
             });
-        } else {
+            _rdgSelectedDestination.addView(rdBtnBusStop);
+        }
+
+        preselectDirection();
+    }
+
+    private void enableStationSelection(boolean enabled) {
+        if (enabled) {
+            _rdgSelectedDestination.setVisibility(View.GONE);
+            _spStations.setVisibility(View.VISIBLE);
+        }
+        else {
             _spStations.setVisibility(View.GONE);
             _rdgSelectedDestination.setVisibility(View.VISIBLE);
+        }
+    }
 
-            for (final BusStop busStop : busStopGroup.getBusStops()) {
-                RadioButton rdBtnBusStop = new RadioButton(this);
-                rdBtnBusStop.setText(DirectionMap.translate(busStop.getDirection()));
-                rdBtnBusStop.setTag(busStop);
-                rdBtnBusStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    BusStop _busStop = busStop;
+    private void initBusStopStations(BusStopGroup busStopGroup) {
+        enableStationSelection(true);
 
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked) {
-                            updateDepartures(_busStop);
-                        }
-                    }
-                });
-                _rdgSelectedDestination.addView(rdBtnBusStop);
+        ArrayAdapter<BusStopSpinnerWrapper> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                BusStopSpinnerWrapper.fromBusStopList(busStopGroup.getBusStops())
+        );
+        _spStations.setAdapter(adapter);
+        _spStations.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                BusStopSpinnerWrapper busStopWrapper = (BusStopSpinnerWrapper) parent.getAdapter().getItem(position);
+                updateDepartures(busStopWrapper.getBusStop());
             }
 
-            preselectDirection();
-        }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
     private void preselectDirection() {

@@ -3,9 +3,6 @@ package de.doaschdn.muensterbus;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Torsten on 26.12.2015.
- */
 public class DirectionMap {
     private static Map<Direction, String> _m = new HashMap<Direction, String>();
 

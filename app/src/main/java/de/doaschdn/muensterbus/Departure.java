@@ -1,8 +1,5 @@
 package de.doaschdn.muensterbus;
 
-import android.util.Log;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,6 +8,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Departure {
+    private static final long ONE_SECOND_IN_MILLIS = 1000;
+    private static final long ONE_MINUTE_IN_MILLIS = 60 * ONE_SECOND_IN_MILLIS;
+    private static final long ONE_HOUR_IN_MILLIS = 60 * ONE_MINUTE_IN_MILLIS;
+    private static final long ONE_DAY_IN_MILLIS = 24 * ONE_HOUR_IN_MILLIS;
+
     public enum TimeType {
         NOW,
         DEPARTURE_IN,
@@ -55,19 +57,18 @@ public class Departure {
             int hours = Integer.parseInt(m.group(1));
             int minutes = Integer.parseInt(m.group(2));
 
-            long arrivalInMillis = minutes * 60 * 1000 + hours * 60 * 60 * 1000;
+            long arrivalInMillis = minutes * ONE_MINUTE_IN_MILLIS + hours * ONE_HOUR_IN_MILLIS;
 
             Date now = new Date();
 
             // Check, if arrival is on a new day (i.e. now=23:55, arrival=00:42)
             if (now.getHours() > hours) {
-                // Add a day
-                arrivalInMillis += 24 * 60 * 60 * 1000;
+                arrivalInMillis += ONE_DAY_IN_MILLIS;
             }
 
-            long nowInMillis = now.getHours() * 60 * 60 * 1000 + now.getMinutes() * 60 * 1000;
+            long nowInMillis = now.getHours() * ONE_HOUR_IN_MILLIS + now.getMinutes() * ONE_MINUTE_IN_MILLIS;
 
-            return ((arrivalInMillis - nowInMillis) / (60 * 1000)) + "min";
+            return ((arrivalInMillis - nowInMillis) / ONE_MINUTE_IN_MILLIS) + "min";
         }
 
         return "";

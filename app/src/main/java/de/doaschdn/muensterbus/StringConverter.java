@@ -1,7 +1,5 @@
 package de.doaschdn.muensterbus;
 
-import android.util.Log;
-
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -13,9 +11,6 @@ import retrofit.mime.TypedInput;
 import retrofit.mime.TypedOutput;
 import retrofit.mime.TypedString;
 
-/**
- * Created by Torsten on 08.11.2015.
- */
 public class StringConverter implements Converter {
 
     @Override

@@ -13,9 +13,6 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
-/**
- * Created by Torsten on 12.11.2015.
- */
 public class SearchContentProvider extends ContentProvider {
     private static final String TAG = "SearchContentProvider";
 
@@ -29,7 +26,11 @@ public class SearchContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         String searchTerm = uri.getLastPathSegment().toLowerCase();
-        MatrixCursor cursor = new MatrixCursor(new String[] { BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_INTENT_DATA });
+        MatrixCursor cursor = new MatrixCursor(new String[] {
+                BaseColumns._ID,
+                SearchManager.SUGGEST_COLUMN_TEXT_1,
+                SearchManager.SUGGEST_COLUMN_INTENT_DATA
+        });
         Log.d(TAG, "Searching for: " + searchTerm);
 
         List<BusStopGroup> busStopGroupList = getBusStopGroupsFor(searchTerm);

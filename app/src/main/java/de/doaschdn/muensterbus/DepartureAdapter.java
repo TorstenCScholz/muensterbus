@@ -9,9 +9,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by Torsten on 05.03.2016.
- */
 public class DepartureAdapter extends RecyclerView.Adapter<DepartureAdapter.DepartureListHolder> {
 
     private Context _context;

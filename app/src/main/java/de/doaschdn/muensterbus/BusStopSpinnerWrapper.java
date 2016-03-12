@@ -2,9 +2,6 @@ package de.doaschdn.muensterbus;
 
 import java.util.List;
 
-/**
- * Created by Torsten on 26.12.2015.
- */
 public class BusStopSpinnerWrapper {
     private BusStop _busStop;
 
