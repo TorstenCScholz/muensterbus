@@ -7,11 +7,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.doaschdn.muensterbus.de.doaschdn.muensterbus.util.StringUtil;
-
-/**
- * Created by Torsten on 08.11.2015.
- */
 public class SWMParser {
     private static final String TAG = "SWMParser";
 

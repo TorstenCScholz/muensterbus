@@ -1,7 +1,5 @@
 package de.doaschdn.muensterbus;
 
-import android.util.Log;
-
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
