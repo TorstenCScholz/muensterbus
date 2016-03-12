@@ -9,9 +9,6 @@ import java.util.Map;
 
 import de.doaschdn.muensterbus.de.doaschdn.muensterbus.util.StringUtil;
 
-/**
- * Created by Torsten on 14.11.2015.
- */
 public class BusStopGroup implements Serializable {
     private List<BusStop> _busStops;
 
@@ -96,14 +93,7 @@ public class BusStopGroup implements Serializable {
         for (BusStop busStop1 : busStopArray) {
             BusStopGroup group = new BusStopGroup(busStop1);
 
-            for (BusStop busStop2 : busStopArray) {
-                if (busStop1 == busStop2) {
-                    continue;
-                }
-                if (busStop1.belongsToSameGroupAs((busStop2))) {
-                    group.addBusStop(busStop2);
-                }
-            }
+            addBusStopsToGroup(group, busStop1, busStopArray);
 
             String groupName = group.getName();
             if (!busStopGroupMap.containsKey(groupName)) {
@@ -112,5 +102,16 @@ public class BusStopGroup implements Serializable {
         }
 
         return new ArrayList<>(busStopGroupMap.values());
+    }
+
+    private static void addBusStopsToGroup(BusStopGroup group, BusStop groupBaseBusStop, BusStop[] busStopArray) {
+        for (BusStop busStop2 : busStopArray) {
+            if (groupBaseBusStop == busStop2) {
+                continue;
+            }
+            if (groupBaseBusStop.belongsToSameGroupAs(busStop2)) {
+                group.addBusStop(busStop2);
+            }
+        }
     }
 }

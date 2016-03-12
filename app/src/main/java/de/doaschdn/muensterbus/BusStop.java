@@ -9,11 +9,11 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by Torsten on 08.11.2015.
- */
 public class BusStop implements Serializable {
     private static final String STATIC_BUS_STOP_NAME_REGEX = "(?:(.+)\\s)?(\\w\\d?)(?:\\s(.+))?";
+    private static final int REGEX_MATCH_BUSSTOP_PREFIX = 1;
+    private static final int REGEX_MATCH_BUSSTOP_STATICN = 2;
+    private static final int REGEX_MATCH_BUSSTOP_POSTFIX = 3;
 
     private String _id;
     private String _name;
@@ -100,9 +100,9 @@ public class BusStop implements Serializable {
         Matcher m = Pattern.compile(STATIC_BUS_STOP_NAME_REGEX, Pattern.CASE_INSENSITIVE).matcher(fullName);
 
         if (m.matches()) {
-            String prefix = m.group(1) != null ? m.group(1) : "";
-            String station = m.group(2);
-            String postfix = m.group(3) != null ? m.group(3) : "";
+            String prefix = m.group(REGEX_MATCH_BUSSTOP_PREFIX) != null ? m.group(REGEX_MATCH_BUSSTOP_PREFIX) : "";
+            String station = m.group(REGEX_MATCH_BUSSTOP_STATICN);
+            String postfix = m.group(REGEX_MATCH_BUSSTOP_POSTFIX) != null ? m.group(REGEX_MATCH_BUSSTOP_POSTFIX) : "";
 
             return new BusStop(id, prefix + postfix, direction, station);
         }
