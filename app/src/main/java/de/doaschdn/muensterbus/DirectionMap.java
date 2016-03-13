@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DirectionMap {
-    private static Map<Direction, String> _m = new HashMap<Direction, String>();
+    private static Map<Direction, String> _m = new HashMap<>();
 
     static {
         _m.put(Direction.INWARDS, "einwärts");
