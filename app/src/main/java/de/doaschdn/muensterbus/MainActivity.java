@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     RadioGroup _rdgSelectedDestination;
     @Bind(R.id.station_spinner)
     Spinner _spStations;
+    @Bind(R.id.loading_panel)
+    RelativeLayout _loadingPanel;
 
     private BusStopGroup _selectedBusStopGroup;
 
@@ -75,9 +78,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected List<Departure> doInBackground(BusStop... params) {
-            List<Departure> departures = SWMParser.parseBusStopRequests(client.getDeparturesForBusStop(params[0].getId(), System.currentTimeMillis() / 1000));
-
-            return departures;
+            return SWMParser.parseBusStopRequests(
+                    client.getDeparturesForBusStop(
+                            params[0].getId(),
+                            System.currentTimeMillis() / 1000
+                    )
+            );
         }
 
         @Override
@@ -85,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 public void run() {
                     _swipeRefreshLayout.setRefreshing(false);
+                    displayLoadingPanel(false);
                 }
             });
 
@@ -120,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                BusStop busStop = null;
+                BusStop busStop;
 
                 if (_selectedBusStopGroup.containsStation()) {
                     busStop = ((BusStopSpinnerWrapper) _spStations.getSelectedItem()).getBusStop();
@@ -142,6 +149,8 @@ public class MainActivity extends AppCompatActivity {
         _departureView.setLayoutManager(llm);
         DividerItemDecoration divider = new DividerItemDecoration(this, null);
         _departureView.addItemDecoration(divider);
+
+        displayLoadingPanel(false);
     }
 
     @Override
@@ -245,7 +254,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateDepartures(BusStop busStop) {
         Log.d(TAG, "New departure: " + busStop.toString());
+
+        displayLoadingPanel(true);
+
         new BusStopRequest().execute(busStop);
+    }
+
+    private void displayLoadingPanel(boolean show) {
+        _loadingPanel.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override
