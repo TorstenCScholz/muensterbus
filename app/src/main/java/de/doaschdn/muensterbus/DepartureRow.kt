@@ -9,26 +9,14 @@ import android.widget.TextView
 import butterknife.ButterKnife
 import butterknife.bindView
 
-class DepartureRow : LinearLayout {
+class DepartureRow(context: Context, attrs: AttributeSet?, defStyle: Int) : LinearLayout(context, attrs, defStyle) {
     val _tvBusLine: TextView by bindView(R.id.bus_line)
     val _tvDepartureTimeLive: TextView by bindView(R.id.departure_time_live)
     val _tvDepartureTimeCalculated: TextView by bindView(R.id.departure_time_calculated)
 
-    val _view: View = View.inflate(context, R.layout.departure_list_row, this)
+    val _view = View.inflate(context, R.layout.departure_list_row, this)
 
-    constructor(context: Context) : super(context) {
-        init(null, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle) {
-        init(attrs, defStyle)
-    }
-
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    init {
         ButterKnife.bind(_view)
     }
 
