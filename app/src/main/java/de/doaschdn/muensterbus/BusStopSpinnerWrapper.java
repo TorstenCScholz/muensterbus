@@ -17,8 +17,8 @@ public class BusStopSpinnerWrapper {
     public String toString() {
         String ret = _busStop.getStation();
 
-        if (_busStop.getDirection() != Direction.NONE) {
-            ret += " (" + DirectionMap.translate(_busStop.getDirection()) + ")";
+        if (_busStop.getDirection() != null) {
+            ret += " (" + _busStop.getDirection() + ")";
         }
 
         return ret;

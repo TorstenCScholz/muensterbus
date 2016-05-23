@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (final BusStop busStop : busStopGroup.getBusStops()) {
             RadioButton rdBtnBusStop = new RadioButton(this);
-            rdBtnBusStop.setText(DirectionMap.translate(busStop.getDirection()));
+            rdBtnBusStop.setText(busStop.getDirection());
             rdBtnBusStop.setTag(busStop);
             rdBtnBusStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 BusStop _busStop = busStop;
