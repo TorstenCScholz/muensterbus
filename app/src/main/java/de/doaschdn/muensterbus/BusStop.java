@@ -17,14 +17,14 @@ public class BusStop implements Serializable {
 
     private String _id;
     private String _name;
-    private Direction _direction;
+    private String _direction;
     private String _station;
 
-    public BusStop(String id, String busStop, Direction direction) {
+    public BusStop(String id, String busStop, String direction) {
         this(id, busStop, direction, null);
     }
 
-    public BusStop(String id, String busStop, Direction direction, String station) {
+    public BusStop(String id, String busStop, String direction, String station) {
         _id = id;
         _name = busStop;
         _direction = direction;
@@ -39,11 +39,11 @@ public class BusStop implements Serializable {
         this._name = busStop;
     }
 
-    public Direction getDirection() {
+    public String getDirection() {
         return _direction;
     }
 
-    public void setDirection(Direction direction) {
+    public void setDirection(String direction) {
         this._direction = direction;
     }
 
@@ -83,7 +83,7 @@ public class BusStop implements Serializable {
 
     @Override
     public String toString() {
-        return "@BusStop[Id: " + _id + ", Name: " + _name + ", Direction: " + _direction.toString() + ", Station: " + _station + "]";
+        return "@BusStop[Id: " + _id + ", Name: " + _name + ", Direction: " + _direction + ", Station: " + _station + "]";
     }
 
     public boolean belongsToSameGroupAs(BusStop busStop) {
@@ -96,7 +96,7 @@ public class BusStop implements Serializable {
         return m.matches();
     }
 
-    public static BusStop fromStationName(String id, String fullName, Direction direction) {
+    public static BusStop fromStationName(String id, String fullName, String direction) {
         Matcher m = Pattern.compile(STATIC_BUS_STOP_NAME_REGEX, Pattern.CASE_INSENSITIVE).matcher(fullName);
 
         if (m.matches()) {

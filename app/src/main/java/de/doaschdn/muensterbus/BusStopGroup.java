@@ -64,18 +64,6 @@ public class BusStopGroup implements Serializable {
         return commonPrefix;
     }
 
-    public boolean hasDirection(Direction direction) {
-        if (direction != Direction.NONE) {
-            for (BusStop busStop : _busStops) {
-                if (busStop.getDirection() == direction) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     public boolean containsStation() {
         for (BusStop busStop : _busStops) {
             if (busStop.isStation()) {

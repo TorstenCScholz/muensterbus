@@ -52,7 +52,7 @@ public final class SWMParser {
         }
 
         String id = m.group(REGEX_MATCH_BUSSTOP_ID);
-        Direction direction = Direction.NONE;
+        String direction = null;
         String busStop = combineBusStopParts(
                 m.group(REGEX_MATCH_BUSSTOP_PART_START),
                 m.group(REGEX_MATCH_BUSSTOP_PART_MIDDLE),
@@ -61,7 +61,7 @@ public final class SWMParser {
 
         String matchBusStopDirection = m.group(REGEX_MATCH_BUSSTOP_DIRECTION);
         if (matchBusStopDirection != null) {
-            direction = getDirectionFrom(matchBusStopDirection);
+            direction = matchBusStopDirection;
         }
 
         if (BusStop.containsStationName(busStop)) {
@@ -75,17 +75,6 @@ public final class SWMParser {
 
     private static String combineBusStopParts(String partStart, String partMiddle, String partEnd) {
         return partStart + partMiddle + partEnd;
-    }
-
-    private static Direction getDirectionFrom(String directionText) {
-        switch (directionText) {
-            case "einwärts":
-                return Direction.INWARDS;
-            case "auswärts":
-                return Direction.OUTWARDS;
-        }
-
-        return Direction.END;
     }
 
     public static List<Departure> parseBusStopRequests(final String queryResult) {
