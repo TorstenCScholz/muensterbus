@@ -74,10 +74,10 @@ public class BusStopListingFragment extends Fragment {
 
     private void initDepartureView() {
         _departureView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         _departureView.setLayoutManager(llm);
-        DividerItemDecoration divider = new DividerItemDecoration(getContext(), null);
+        DividerItemDecoration divider = new DividerItemDecoration(getActivity(), null);
         _departureView.addItemDecoration(divider);
 
         displayLoadingPanel(false);
@@ -134,7 +134,7 @@ public class BusStopListingFragment extends Fragment {
         enableStationSelection(false);
 
         for (final BusStop busStop : busStopGroup.getBusStops()) {
-            RadioButton rdBtnBusStop = new RadioButton(getContext());
+            RadioButton rdBtnBusStop = new RadioButton(getActivity());
             rdBtnBusStop.setText(busStop.getDirection());
             rdBtnBusStop.setTag(busStop);
             rdBtnBusStop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -168,7 +168,7 @@ public class BusStopListingFragment extends Fragment {
         enableStationSelection(true);
 
         ArrayAdapter<BusStopSpinnerWrapper> adapter = new ArrayAdapter<>(
-                getContext(),
+                getActivity(),
                 android.R.layout.simple_spinner_dropdown_item,
                 BusStopSpinnerWrapper.fromBusStopList(busStopGroup.getBusStops())
         );
@@ -201,7 +201,6 @@ public class BusStopListingFragment extends Fragment {
 
 
     class QuerySearchForSpecificTerm extends AsyncTask<String, Void, List<BusStopGroup>> {
-
         private String _busStopName;
 
         @Override
@@ -213,7 +212,7 @@ public class BusStopListingFragment extends Fragment {
         @Override
         protected void onPostExecute(List<BusStopGroup> busStopGroups) {
             if (busStopGroups.size() != 1) {
-                new AlertDialog.Builder(getContext())
+                new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.busstop_not_found)
                         .setMessage(MessageFormat.format(getText(R.string.busstop_not_found_desc).toString(), _busStopName))
                         .setCancelable(true)
@@ -226,7 +225,6 @@ public class BusStopListingFragment extends Fragment {
     }
 
     class BusStopRequest extends AsyncTask<BusStop, Void, List<Departure>> {
-
         private final SWMApiEndpointInterface client = SWMClient.createService(SWMApiEndpointInterface.class);
 
         @Override
@@ -241,14 +239,14 @@ public class BusStopListingFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<Departure> departureList) {
-//            runOnUiThread(new Runnable() {
-//                public void run() {
-//                    _swipeRefreshLayout.setRefreshing(false);
-//                    displayLoadingPanel(false);
-//                }
-//            });
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    _swipeRefreshLayout.setRefreshing(false);
+                    displayLoadingPanel(false);
+                }
+            });
 
-            DepartureAdapter adapter = new DepartureAdapter(getContext(), departureList);
+            DepartureAdapter adapter = new DepartureAdapter(getActivity(), departureList);
             _departureView.setAdapter(adapter);
         }
     }
