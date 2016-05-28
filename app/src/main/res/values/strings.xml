@@ -12,5 +12,6 @@
     <string name="departure_time_calculated_label">Ankunft ca. um: </string>
     <string name="bus_stop_listing">Haltestellen</string>
     <string name="favorites">Favoriten</string>
+    <string name="not_implemented">Noch nicht verfügbar.</string>
 
 </resources>
