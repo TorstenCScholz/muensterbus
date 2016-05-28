@@ -10,5 +10,7 @@
     <string name="now">Jeden Moment!</string>
     <string name="departure_time_live_label">Ankunft in: </string>
     <string name="departure_time_calculated_label">Ankunft ca. um: </string>
+    <string name="bus_stop_listing">Haltestellen</string>
+    <string name="favorites">Favoriten</string>
 
 </resources>
