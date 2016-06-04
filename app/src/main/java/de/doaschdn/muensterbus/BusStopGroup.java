@@ -18,6 +18,10 @@ public class BusStopGroup implements Serializable {
     }
 
     public BusStopGroup(List<BusStop> busStops) {
+        if (BuildConfig.DEBUG && (busStops.size() <= 0)) {
+            throw new AssertionError();
+        }
+
         _busStops = new LinkedList<>();
         _busStops.addAll(busStops);
     }
