@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.doaschdn.muensterbus.BusStop;
@@ -37,10 +38,17 @@ public class FavoritesFragment extends Fragment {
         _favoritesView.addItemDecoration(divider);
 
         List<BusStopGroup> favorites = new ArrayList<BusStopGroup>() {{
-            add(new BusStopGroup(new BusStop("0", "Test Station 1", "einwärts")));
-            add(new BusStopGroup(new BusStop("1", "Test Station 2", "auswärts")));
-            add(new BusStopGroup(new BusStop("2", "Test Station 3", "Endstation")));
-            add(new BusStopGroup(new BusStop("3", "Test Station 4", "unbekannt")));
+            add(new BusStopGroup(new LinkedList<BusStop>() {{
+                add(new BusStop("4146101", "Aegidiitor", "auswärts"));
+                add(new BusStop("4146102", "Aegidiitor", "einwärts"));
+            }}));
+            add(new BusStopGroup(new LinkedList<BusStop>() {{
+                add(new BusStop("4294202", "Emsstraße", "einwärts"));
+            }}));
+            add(new BusStopGroup(new LinkedList<BusStop>() {{
+                add(new BusStop("4140101", "Schützenstraße", "auswärts"));
+                add(new BusStop("4140102", "Schützenstraße", "einwärts"));
+            }}));
         }};
         FavoritesAdapter adapter = new FavoritesAdapter(getActivity(), favorites);
         _favoritesView.setAdapter(adapter);
