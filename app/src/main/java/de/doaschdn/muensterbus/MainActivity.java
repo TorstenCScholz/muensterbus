@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     List<WeakReference<Fragment>> _fragments = new ArrayList<>();
 
+    TabLayout _tabLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +42,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTabLayout() {
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText(getText(R.string.bus_stop_listing)));
-        tabLayout.addTab(tabLayout.newTab().setText(getText(R.string.favorites)));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        _tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        _tabLayout.addTab(_tabLayout.newTab().setText(getText(R.string.bus_stop_listing)));
+        _tabLayout.addTab(_tabLayout.newTab().setText(getText(R.string.favorites)));
+        _tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        initTabAdapter(tabLayout);
+        initTabAdapter(_tabLayout);
     }
 
     @Override
@@ -112,6 +114,18 @@ public class MainActivity extends AppCompatActivity {
         } else if (data != null) {
             fragment.setBusStopGroup(new Gson().fromJson(data.toString(), BusStopGroup.class));
         }
+    }
+
+    public void setBusStopGroup(BusStopGroup busStopGroup) {
+        BusStopListingFragment fragment = (BusStopListingFragment)getActiveFragments().get(TabType.Departure.getValue());
+        fragment.setBusStopGroup(busStopGroup);
+
+        selectTab(TabType.Departure);
+    }
+
+    private void selectTab(TabType tabType) {
+        TabLayout.Tab tab = _tabLayout.getTabAt(tabType.getValue());
+        tab.select();
     }
 
     @Override

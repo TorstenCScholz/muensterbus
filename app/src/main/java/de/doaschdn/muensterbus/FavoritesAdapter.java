@@ -1,5 +1,6 @@
 package de.doaschdn.muensterbus;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,7 +27,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
                 from(viewGroup.getContext()).
                 inflate(R.layout.favorites_list_row, viewGroup, false);
 
-        return new FavoritesListHolder(itemView);
+        return new FavoritesListHolder(itemView, (Activity)_context);
     }
 
     @Override
@@ -44,7 +45,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         protected TextView _tvFavoritesLine;
         private BusStopGroup _busStopGroup;
 
-        public FavoritesListHolder(View v) {
+        // TODO: Refactor as dependency
+        public FavoritesListHolder(View v, final Activity activity) {
             super(v);
 
             _tvFavoritesLine = (TextView) v.findViewById(R.id.favorites_line);
@@ -53,6 +55,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
                 @Override
                 public void onClick(View v) {
+                    ((MainActivity)activity).setBusStopGroup(getBusStopGroup());
                     Log.d("TAG", "Clicked " + getBusStopGroup().getName() + "!");
                 }
             });
