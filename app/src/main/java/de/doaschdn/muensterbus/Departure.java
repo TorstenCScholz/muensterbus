@@ -44,16 +44,16 @@ public class Departure {
                 break;
             case DEPARTURE_IN:
                 _departureIn = _departureValue;
-                _departureAt = calculateDepartureAt(_departureValue);
+                _departureAt = transformDepartureInToDepartureAt(_departureValue);
                 break;
             case DEPARTURE_AT:
-                _departureIn = calculateDepartureIn(_departureValue);
+                _departureIn = transformDepartureAtToDepartureIn(_departureValue);
                 _departureAt = _departureValue;
                 break;
         }
     }
 
-    private String calculateDepartureIn(String departureAt) {
+    private String transformDepartureAtToDepartureIn(String departureAt) {
         Matcher m = PATTERN_DEPARTURE_AT.matcher(departureAt);
 
         if (m.matches()) {
@@ -77,7 +77,7 @@ public class Departure {
         return "";
     }
 
-    private String calculateDepartureAt(String departureIn) {
+    private String transformDepartureInToDepartureAt(String departureIn) {
         Matcher m = PATTERN_DEPARTURE_IN.matcher(departureIn);
 
         if (m.matches()) {
