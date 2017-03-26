@@ -43,6 +43,12 @@ public class FavoritesFragment extends Fragment {
                 add(new BusStop("4146102", "Aegidiitor", "einwärts"));
             }}));
             add(new BusStopGroup(new LinkedList<BusStop>() {{
+                add(new BusStop("4238107", "Danziger Freiheit", "einwärts", "A"));
+                add(new BusStop("4238101", "Danziger Freiheit", "auswärts", "B"));
+                add(new BusStop("4238108", "Danziger Freiheit", "Endhaltestelle", "C"));
+                add(new BusStop("4238103", "Danziger Freiheit", "auswärts", "D"));
+            }}));
+            add(new BusStopGroup(new LinkedList<BusStop>() {{
                 add(new BusStop("4294202", "Emsstraße", "einwärts"));
             }}));
             add(new BusStopGroup(new LinkedList<BusStop>() {{
