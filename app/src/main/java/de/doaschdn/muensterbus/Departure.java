@@ -13,6 +13,9 @@ public class Departure {
     private static final long ONE_HOUR_IN_MILLIS = 60 * ONE_MINUTE_IN_MILLIS;
     private static final long ONE_DAY_IN_MILLIS = 24 * ONE_HOUR_IN_MILLIS;
 
+    private static final Pattern PATTERN_DEPARTURE_AT = Pattern.compile("(\\d+):(\\d+)");
+    private static final Pattern PATTERN_DEPARTURE_IN = Pattern.compile("(\\d+)\\s+min", Pattern.CASE_INSENSITIVE);
+
     public enum TimeType {
         NOW,
         DEPARTURE_IN,
@@ -51,7 +54,7 @@ public class Departure {
     }
 
     private String calculateDepartureIn(String departureAt) {
-        Matcher m = Pattern.compile("(\\d+):(\\d+)").matcher(departureAt);
+        Matcher m = PATTERN_DEPARTURE_AT.matcher(departureAt);
 
         if (m.matches()) {
             int hours = Integer.parseInt(m.group(1));
@@ -75,7 +78,7 @@ public class Departure {
     }
 
     private String calculateDepartureAt(String departureIn) {
-        Matcher m = Pattern.compile("(\\d+)min", Pattern.CASE_INSENSITIVE).matcher(departureIn);
+        Matcher m = PATTERN_DEPARTURE_IN.matcher(departureIn);
 
         if (m.matches()) {
             int minUntilArrival = Integer.parseInt(m.group(1));
